@@ -59,8 +59,18 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - images/login_bg.png
+    - images/home_category_고용.png
+    - images/home_category_기타.png
+    - images/home_category_농축어업.png
+    - images/home_category_문화.png
+    - images/home_category_보건.png
+    - images/home_category_보호.png
+    - images/home_category_생활.png
+    - images/home_category_임신.png
+    - images/home_category_주거.png
+    - images/home_category_행정.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
