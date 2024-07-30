@@ -110,15 +110,16 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // DESIGN HERE
+  // UI DESIGN
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.network(
-              "https://via.placeholder.com/375x812",
+            // 배경 사진
+            child: Image.asset(
+              "images/chat_bg.png",
               fit: BoxFit.cover,
             ),
           ),
@@ -159,8 +160,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         text: msgs[index].msg,
                         isSender: msgs[index].isSender,
                         color: msgs[index].isSender
-                            ? Color(0xFFE2EAD1)
-                            : Colors.grey.shade200,
+                            ? Colors.grey.shade200 // grey
+                            : Color(0xFFE2EAD1), // light green bubble
                       ),
                     );
                   },
@@ -178,16 +179,19 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.fromLTRB(16.0, 10.0, 8.0, 7.0),
                           child: TextField(
                             controller: textEditingController,
                             textCapitalization: TextCapitalization.sentences,
                             onSubmitted: (value) => sendMsg(),
                             textInputAction: TextInputAction.send,
                             showCursor: true,
+                            style: const TextStyle(
+                              fontSize: 13.0, // 글씨 크기를 16으로 설정
+                            ),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
-                              hintText: "Enter text",
+                              hintText: "정책 도움이 필요한 부분이나 궁금한 것을 물어보세요.",
                             ),
                           ),
                         ),
@@ -200,11 +204,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: Color(0xFFB8DF88),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: const Icon(
-                        Icons.send,
+                        Icons.blur_on_sharp, // 채팅 보내기 버튼
                         color: Colors.white,
                       ),
                     ),
