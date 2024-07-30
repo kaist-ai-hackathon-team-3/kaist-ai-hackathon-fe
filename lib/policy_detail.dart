@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'common_layout.dart'; // CommonLayout import
 
 class PolicyDetailScreen extends StatelessWidget {
   final String title;
@@ -7,11 +8,8 @@ class PolicyDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      backgroundColor: Colors.white,
+    return CommonLayout(
+      selectedIndex: -1, // 정책 상세 화면에서는 하단 내비게이션 바의 인덱스를 선택하지 않음
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -110,23 +108,6 @@ class PolicyDetailScreen extends StatelessWidget {
             _buildSectionTitle('신청 방법'),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color(0xFF56B45F),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }

@@ -1,8 +1,7 @@
-import 'package:ai/chat.dart';
+import 'package:ai/home_category.dart';
 import 'package:ai/policy_detail.dart';
-import 'package:ai/profile.dart';
 import 'package:flutter/material.dart';
-import 'home_category.dart';
+import 'common_layout.dart'; // CommonLayout import
 
 class HomePage extends StatefulWidget {
   final List<String> categories;
@@ -14,63 +13,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  static List<Widget> _widgetOptions = <Widget>[
-    // 각 인덱스에 해당하는 페이지를 여기에 추가
-    HomePageContent(),  // Home
-    ChatScreen(),         // Chat
-    ProfileScreen(),      // Profile
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // 검색 기능 구현
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              // 알림 기능 구현
-            },
-          ),
-        ],
-      ),
-      backgroundColor: Colors.white,
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color(0xFF56B45F),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+    return CommonLayout(
+      body: HomePageContent(),
+      selectedIndex: 0,
     );
   }
 }

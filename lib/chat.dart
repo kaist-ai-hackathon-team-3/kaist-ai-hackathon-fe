@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ai/message.dart';
 import 'package:chat_bubbles/bubbles/bubble_normal.dart';
+import 'home.dart'; // HomePage import 추가
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -16,7 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController scrollController = ScrollController();
   final List<Message> msgs = [];
   bool isTyping = false;
-  String userName = "사용자";  // 기본 이름을 '사용자'로 설정
+  String userName = "사용자"; // 기본 이름을 '사용자'로 설정
 
   @override
   void initState() {
@@ -75,9 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       var response = await http.post(
         Uri.parse("http://223.130.141.98:3000/clova/chat"),
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "messages": text,
         }),
@@ -131,19 +130,33 @@ class _ChatScreenState extends State<ChatScreen> {
                 alignment: Alignment.centerLeft,
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 22,
-                      backgroundImage: NetworkImage("https://via.placeholder.com/44"),
+                      backgroundImage:
+                          NetworkImage("https://via.placeholder.com/44"),
                     ),
                     const SizedBox(width: 16),
-                    Text(
-                      '$userName님의 정말 채팅',
-                      style: const TextStyle(
-                        color: Color(0xFF202325),
-                        fontSize: 16,
-                        fontFamily: 'Noto Sans',
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Text(
+                        '$userName님의 정말 채팅',
+                        style: const TextStyle(
+                          color: Color(0xFF202325),
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.home),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const HomePage(categories: [])),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -161,7 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         isSender: msgs[index].isSender,
                         color: msgs[index].isSender
                             ? Colors.grey.shade200 // grey
-                            : Color(0xFFE2EAD1), // light green bubble
+                            : const Color(0xFFE2EAD1), // light green bubble
                       ),
                     );
                   },
@@ -179,7 +192,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16.0, 10.0, 8.0, 7.0),
+                          padding:
+                              const EdgeInsets.fromLTRB(16.0, 10.0, 8.0, 7.0),
                           child: TextField(
                             controller: textEditingController,
                             textCapitalization: TextCapitalization.sentences,
@@ -204,7 +218,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Color(0xFFB8DF88),
+                        color: const Color(0xFFB8DF88),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: const Icon(
