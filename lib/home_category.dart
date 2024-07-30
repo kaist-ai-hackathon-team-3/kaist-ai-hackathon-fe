@@ -28,7 +28,7 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(_selectedCategories),
+          builder: (context) => HomePage(categories: _selectedCategories),
         ),
       );
     }
@@ -38,7 +38,18 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.arrow_back_ios),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const HomePage(
+                        categories: [],
+                      )),
+            );
+          },
+        ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
