@@ -41,7 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
           userName = data["profile"][0]["name"];
@@ -82,7 +82,8 @@ class _ChatScreenState extends State<ChatScreen> {
         }),
       );
 
-      if (response.statusCode == 201) {
+      // error control. 그냥 무시하고 닫아도 됨.
+      if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         setState(() {
           isTyping = false;
@@ -98,6 +99,40 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       } else {
         throw Exception('Failed to get response from API');
+      }
+      if (response.statusCode == 400) {
+        var json = jsonDecode(response.body);
+        setState(() {
+          isTyping = false;
+          msgs.add(Message(
+            false,
+            json["content"].toString().trimLeft(),
+          ));
+        });
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+        );
+      } else {
+        throw Exception('400 Error: Bad Request');
+      }
+      if (response.statusCode == 500) {
+        var json = jsonDecode(response.body);
+        setState(() {
+          isTyping = false;
+          msgs.add(Message(
+            false,
+            json["content"].toString().trimLeft(),
+          ));
+        });
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+        );
+      } else {
+        throw Exception('500 Error: Internal Server Error');
       }
     } catch (e) {
       setState(() {

@@ -96,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               const SizedBox(
                 width: 300,
                 height: 50,
@@ -112,9 +112,9 @@ class ProfileScreen extends StatelessWidget {
                           color: Colors.black,
                           fontSize: 20,
                           fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                           height: 1.2, // Text height 0.04에서 1.2으로 수정
-                          letterSpacing: 0.28,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ),
