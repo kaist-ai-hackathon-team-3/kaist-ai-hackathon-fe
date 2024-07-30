@@ -151,11 +151,11 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
                     ),
                     onPressed: _viewPolicies,
                     child: const Text(
-                      '정책 보기',
+                      '선택 완료',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        fontFamily: 'Noto Sans KR',
+                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.w700,
                         height: 1.5,
                         letterSpacing: 0.45,
