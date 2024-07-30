@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ai/home_category.dart';
 import 'login.dart';
 
 
 void main() {
+  runApp(MyApp());
   runApp(MyApp());
 }
 
