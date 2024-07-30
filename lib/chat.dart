@@ -171,14 +171,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(1.0),
                       child: Container(
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: const Color.fromARGB(170, 238, 238, 238),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
+                          // 검색 입력란
                           padding: const EdgeInsets.fromLTRB(16.0, 10.0, 8.0, 7.0),
                           child: TextField(
                             controller: textEditingController,
