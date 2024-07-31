@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:jungmal/new_chat.dart';
 import 'package:provider/provider.dart';
 import 'user_provider.dart';
 import 'package:jungmal/message.dart';
@@ -71,7 +72,8 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       print('오류 발생: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to create new chat room, please try again!")),
+        const SnackBar(
+            content: Text("Failed to create new chat room, please try again!")),
       );
     }
   }
@@ -80,7 +82,8 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       print('요청 전송 중: /clova/chatroom/$chatRoomId/summary');
       var response = await http.get(
-        Uri.parse("http://223.130.141.98:3000/clova/chatroom/$chatRoomId/summary"),
+        Uri.parse(
+            "http://223.130.141.98:3000/clova/chatroom/$chatRoomId/summary"),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -161,7 +164,8 @@ class _ChatScreenState extends State<ChatScreen> {
           curve: Curves.easeOut,
         );
         print('응답 수신 완료: ${json["content"]}');
-        if (msgs.length == 2) {  // 사용자가 첫 대화를 보내고 나서 첫 번째 응답을 받은 후에만 요약 요청
+        if (msgs.length == 2) {
+          // 사용자가 첫 대화를 보내고 나서 첫 번째 응답을 받은 후에만 요약 요청
           await _fetchChatRoomSummary();
         }
       } else {
@@ -195,7 +199,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '$userName',
+                      userName,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 24,
@@ -263,6 +267,16 @@ class _ChatScreenState extends State<ChatScreen> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const NewChatScreen()),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.home),
