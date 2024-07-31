@@ -133,8 +133,9 @@ class NewChatScreen extends StatelessWidget {
                                       begin: Alignment(0.00, -1.00),
                                       end: Alignment(0, 1),
                                       colors: [
-                                        Color(0xFFBFDDA7),
-                                        Color(0x00C4C4C4)
+                                        Color(
+                                            0xFFBFDDA7), // 첫 번째 색상 (예: 연한 초록색)
+                                        Color(0x00ffffff),
                                       ],
                                     ),
                                     shape: RoundedRectangleBorder(
@@ -213,6 +214,7 @@ class NewChatScreen extends StatelessWidget {
               ],
             ),
           ),
+          
         ],
       ),
     );
