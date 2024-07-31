@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'user_provider.dart';
 import 'login.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -9,9 +10,14 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: LoginScreen(),
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: MaterialApp(
+        home: LoginScreen(),
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
