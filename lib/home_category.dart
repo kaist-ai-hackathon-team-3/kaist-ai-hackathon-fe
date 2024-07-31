@@ -10,6 +10,20 @@ class HomeCategoryScreen extends StatefulWidget {
 
 class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
   final List<String> _selectedCategories = [];
+  final Map<String, int> categoryMap = {
+    '생활, 안정': 1,
+    '주거, 자립': 2,
+    '고용, 창업': 3,
+    '보건, 의료': 4,
+    '행정, 안전': 5,
+    '보호, 돌봄': 6,
+    '문화, 환경': 7,
+    '농/축/어업': 8,
+    '북한, 다문화': 9,
+    '국방': 10,
+    '교육': 11,
+    '기타': 12,
+  };
 
   void _toggleCategory(String category) {
     setState(() {
@@ -25,10 +39,13 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
 
   void _viewPolicies() {
     if (_selectedCategories.isNotEmpty) {
+      List<int> selectedCategoryIds = _selectedCategories
+          .map((category) => categoryMap[category]!)
+          .toList();
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(categories: _selectedCategories),
+          builder: (context) => HomePage(categories: selectedCategoryIds),
         ),
       );
     }
@@ -109,11 +126,6 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
                         ),
                         policyCategory(
                           context,
-                          'images/home_category_임신.png',
-                          '임신, 출산',
-                        ),
-                        policyCategory(
-                          context,
                           'images/home_category_보호.png',
                           '보호, 돌봄',
                         ),
@@ -126,6 +138,21 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
                           context,
                           'images/home_category_농축어업.png',
                           '농/축/어업',
+                        ),
+                        policyCategory(
+                          context,
+                          'images/home_category_기타.png',
+                          '북한, 다문화',
+                        ),
+                        policyCategory(
+                          context,
+                          'images/home_category_기타.png',
+                          '국방',
+                        ),
+                        policyCategory(
+                          context,
+                          'images/home_category_기타.png',
+                          '교육',
                         ),
                         policyCategory(
                           context,

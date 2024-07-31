@@ -1,10 +1,12 @@
-import 'package:ai/home_category.dart';
-import 'package:ai/policy_detail.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'common_layout.dart'; // CommonLayout import
+import 'home_category.dart';
+import 'policy_detail.dart';
+import 'common_layout.dart';
 
 class HomePage extends StatefulWidget {
-  final List<String> categories;
+  final List<int> categories;
 
   const HomePage({super.key, required this.categories});
 
@@ -13,16 +15,57 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Future<List<dynamic>> _policies;
+
+  @override
+  void initState() {
+    super.initState();
+    _policies = fetchPolicies(widget.categories);
+  }
+
+  Future<List<dynamic>> fetchPolicies(List<int> categories) async {
+    final List<dynamic> policies = [];
+
+    for (int category in categories) {
+      try {
+        final response = await http.get(
+          Uri.parse('http://223.130.141.98:3000/policy/category/$category'),
+          headers: {
+            'Accept': 'application/json',
+          },
+        ).timeout(const Duration(seconds: 10)); // 10초 타임아웃 설정
+        if (response.statusCode == 200) {
+          final List<dynamic> data = json.decode(response.body);
+          policies.addAll(data);
+          print('Data for category $category: $data');
+        } else {
+          print('Failed to load policies for category $category');
+          throw Exception('Failed to load policies');
+        }
+      } catch (e) {
+        print('Error fetching policies for category $category: $e');
+        throw Exception('Error fetching policies for category $category: $e');
+      }
+    }
+
+    print('Total policies: $policies');
+    return policies;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CommonLayout(
-      body: HomePageContent(),
+      body: HomePageContent(policies: _policies),
       selectedIndex: 0,
     );
   }
 }
 
 class HomePageContent extends StatelessWidget {
+  final Future<List<dynamic>> policies;
+
+  const HomePageContent({super.key, required this.policies});
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -81,43 +124,27 @@ class HomePageContent extends StatelessWidget {
             const SizedBox(height: 10),
             SizedBox(
               height: 218.43,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  policyCard(context, '소상공인 정책 지원', '2024.09~2024.11', '교육부',
-                      'https://via.placeholder.com/192x108'),
-                  policyCard(context, 'Crypto Art NFT', '6,510 Members', '교육부',
-                      'https://via.placeholder.com/161x108'),
-                  policyCard(context, 'Lord of the Rings', '1,050 Members', 'Movies',
-                      'https://via.placeholder.com/267x108'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              '내 주변 정책',
-              style: TextStyle(
-                color: Color(0xFF303030),
-                fontSize: 20,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                height: 1.5,
-                letterSpacing: 0.56,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 252.43,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  policyCard(context, '정책 이름', '기간', '교육부',
-                      'https://via.placeholder.com/150x108'),
-                  policyCard(context, 'Crypto Insiders', '4,412 Members', '교육부',
-                      'https://via.placeholder.com/162x108'),
-                  policyCard(context, 'World News', '2,147 Members', 'News',
-                      'https://via.placeholder.com/267x108'),
-                ],
+              child: FutureBuilder<List<dynamic>>(
+                future: policies,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    print('Error: ${snapshot.error}');
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    print('No policies found');
+                    return const Center(child: Text('No policies found'));
+                  } else {
+                    final displayData = snapshot.data!.take(10).toList();
+                    return ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: displayData
+                          .map((policy) => policyCard(context, policy))
+                          .toList(),
+                    );
+                  }
+                },
               ),
             ),
           ],
@@ -126,14 +153,13 @@ class HomePageContent extends StatelessWidget {
     );
   }
 
-  Widget policyCard(BuildContext context,
-      String title, String subtitle, String tag, String imageUrl) {
+  Widget policyCard(BuildContext context, dynamic policy) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PolicyDetailScreen(title: title),
+            builder: (context) => PolicyDetailScreen(policyId: policy['serviceID']),
           ),
         );
       },
@@ -148,46 +174,54 @@ class HomePageContent extends StatelessWidget {
               height: 108,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(11),
-                image: DecorationImage(
-                  image: NetworkImage(imageUrl),
-                  fit: BoxFit.cover,
-                ),
+              ),
+              child: Image.network(
+                'https://via.placeholder.com/147x108', // 임시 이미지 URL
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset('images/home_category_농축어업.png');
+                },
               ),
             ),
             const SizedBox(height: 5),
-            Text(
-              title,
-              style: const TextStyle(
-                color: Color(0xFF303030),
-                fontSize: 14,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-                letterSpacing: 0.39,
+            Flexible(
+              child: Text(
+                policy['serviceName'],
+                style: const TextStyle(
+                  color: Color(0xFF303030),
+                  fontSize: 14,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                  letterSpacing: 0.39,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(height: 3),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                color: Color(0xFF686A8A),
-                fontSize: 12,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-                letterSpacing: 0.34,
+            Flexible(
+              child: Text(
+                policy['applicationDeadline'],
+                style: const TextStyle(
+                  color: Color(0xFF686A8A),
+                  fontSize: 12,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                  letterSpacing: 0.34,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(height: 3),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(11),
               ),
               child: Text(
-                tag,
+                policy['responsibleAgencyName'],
                 style: const TextStyle(
                   color: Color(0xFF686A8A),
                   fontSize: 12,
@@ -197,6 +231,7 @@ class HomePageContent extends StatelessWidget {
                   letterSpacing: 0.34,
                 ),
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
