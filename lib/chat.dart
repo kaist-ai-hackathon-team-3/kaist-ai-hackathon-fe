@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ai/message.dart';
 import 'package:chat_bubbles/bubbles/bubble_normal.dart';
-import 'home.dart'; // HomePage import 추가
+import 'home.dart'; 
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -17,7 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController scrollController = ScrollController();
   final List<Message> msgs = [];
   bool isTyping = false;
-  String userName = "사용자"; // 기본 이름을 '사용자'로 설정
+  String userName = "사용자"; 
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _fetchUserName() async {
     try {
       final response = await http.get(
-        Uri.parse("http://223.130.141.98:3000/user/profile"),
+        Uri.parse("http://223.130.141.98:3000/user"),
         headers: {
           "Content-Type": "application/json",
         },
@@ -113,6 +113,43 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Color(0xFFADD77A),
+              ),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '$userName',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Add more items here
+          ],
+        ),
+      ),
       body: Stack(
         children: [
           Positioned.fill(
@@ -130,15 +167,26 @@ class _ChatScreenState extends State<ChatScreen> {
                 alignment: Alignment.centerLeft,
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 22,
-                      backgroundImage:
-                          NetworkImage("https://via.placeholder.com/44"),
+                    Builder(
+                      builder: (context) => GestureDetector(
+                        onTap: () => Scaffold.of(context).openDrawer(),
+                        child: CircleAvatar(
+                          radius: 22,
+                          child: ClipOval(
+                            child: Image.asset(
+                              "images/chat_profile.png",
+                              fit: BoxFit.fill,
+                              width: 44,
+                              height: 44,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Text(
-                        '$userName님의 정말 채팅',
+                        '$userName님의 대화 내역',
                         style: const TextStyle(
                           color: Color(0xFF202325),
                           fontSize: 16,
