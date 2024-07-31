@@ -1,4 +1,4 @@
-import 'package:ai/home_category.dart';
+import 'package:jungmal/home_category.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
