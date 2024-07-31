@@ -28,15 +28,14 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isTyping = false;
   String userName = "사용자";
   int chatRoomId = 0;
-  int userId = 1;
-  int profileId = 11;
+  int userId = 1; // 박음
+  int profileId = 11; // 박음
 
   @override
   void initState() {
     super.initState();
     _fetchUserProfile();
     _fetchChatRooms();
-    _createNewChatRoom();
   }
 
   @override
@@ -188,6 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
       isTyping = true;
     });
 
+    // 새로운 메시지를 보여주기 위해 스크롤을 하단으로 이동
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(seconds: 1),
@@ -201,15 +201,16 @@ class _ChatScreenState extends State<ChatScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "messages": text,
-          "roomId": chatRoomId, // 추가된 필드
+          "roomId": chatRoomId,
         }),
       );
 
       print('API 응답 상태 코드: ${response.statusCode}');
       print('API 응답 본문: ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         var json = jsonDecode(response.body);
+        print(json["content"].toString().trimLeft());
         setState(() {
           isTyping = false;
           msgs.add(Message(
@@ -217,15 +218,17 @@ class _ChatScreenState extends State<ChatScreen> {
             json["content"].toString().trimLeft(),
           ));
         });
+
+        // 새로운 메시지를 보여주기 위해 스크롤 조정
         scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(seconds: 1),
+          scrollController.position.maxScrollExtent + 100, // 필요에 따라 조정
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
+
         print('응답 수신 완료: ${json["content"]}');
         if (msgs.length == 2) {
-          // 사용자가 첫 대화를 보내고 나서 첫 번째 응답을 받은 후에만 요약 요청
-          await _fetchChatRoomSummary();
+          //await _fetchChatRoomSummary();
         }
       } else {
         throw Exception('Failed to get response from API');
@@ -236,7 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       print('오류 발생: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Some error occurred, please try again!")),
+        const SnackBar(content: Text("오류가 발생했습니다. 다시 시도해주세요!")),
       );
     }
   }
