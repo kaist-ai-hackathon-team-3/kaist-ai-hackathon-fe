@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'user_provider.dart';
 
-class MyInfoDetails extends StatefulWidget {
-  const MyInfoDetails({super.key});
+class NewInfoDetails extends StatefulWidget {
+  const NewInfoDetails({super.key});
 
   @override
-  State<MyInfoDetails> createState() => _MyInfoDetailsState();
+  State<NewInfoDetails> createState() => _NewInfoDetailsState();
 }
 
-class _MyInfoDetailsState extends State<MyInfoDetails> {
+class _NewInfoDetailsState extends State<NewInfoDetails> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _regionController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
@@ -17,43 +15,6 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
   final TextEditingController _householdSizeController = TextEditingController();
   final TextEditingController _householdIncomeController = TextEditingController();
   final TextEditingController _targetFeatureController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeProfileData();
-  }
-
-  void _initializeProfileData() {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final user = userProvider.user;
-
-    if (user != null) {
-      // Find the profile with userId == 1
-      final profile = user.profile.firstWhere(
-        (profile) => profile.name == '이신혁',
-        /*orElse: () => Profile(
-          id: 0,
-          name: '',
-          userId: 1,
-          region: '',
-          gender: '',
-          occupation: '',
-          householdSize: 0,
-          householdIncome: 0,
-          targetFeature: '',
-        ),*/
-      );
-
-      _nameController.text = profile.name;
-      _regionController.text = profile.region;
-      _genderController.text = profile.gender;
-      _occupationController.text = profile.occupation;
-      _householdSizeController.text = profile.householdSize.toString();
-      _householdIncomeController.text = profile.householdIncome.toString();
-      _targetFeatureController.text = profile.targetFeature;
-    }
-  }
 
   @override
   void dispose() {
@@ -74,7 +35,7 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          '내 프로필 수정',
+          '프로필 등록',
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -96,13 +57,13 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProfileField('이름', '*', _nameController, true),
-              _buildProfileField('지역', '*', _regionController, true),
-              _buildProfileField('성별', '*', _genderController, true),
-              _buildProfileField('직업', '*', _occupationController, true),
-              _buildProfileField('가구원 수', '', _householdSizeController, false),
-              _buildProfileField('가구 소득', '', _householdIncomeController, false),
-              _buildProfileField('기타 사항', '', _targetFeatureController, false),
+              _buildProfileField('나와의 관계', '*', _nameController, true, '예: 아버지'),
+              _buildProfileField('이름', '*', _nameController, true, '예: 홍길동'),
+              _buildProfileField('지역', '*', _regionController, true, '예: 대전광역시 유성구'),
+              _buildProfileField('직업', '*', _occupationController, true, '예: 직장인'),
+              _buildProfileField('가구원 수', '', _householdSizeController, false, '예: 4'),
+              _buildProfileField('가구 소득', '', _householdIncomeController, false, '예: 5000만원'),
+              _buildProfileField('기타 사항 자유롭게 기재', '', _targetFeatureController, false, '탈북민, 다문화가정, 한부모가정, 소상공인, 장애인, 노인 등'),
               SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
@@ -117,7 +78,7 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
                     ),
                   ),
                   child: Text(
-                    '확인',
+                    '등록',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -134,7 +95,7 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
     );
   }
 
-  Widget _buildProfileField(String label, String required, TextEditingController controller, bool requiredField) {
+  Widget _buildProfileField(String label, String required, TextEditingController controller, bool requiredField, String hintText) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
@@ -166,10 +127,11 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
           SizedBox(height: 8),
           TextFormField(
             controller: controller,
-            readOnly: true, // Makes the text field read-only
             decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(color: Colors.grey, fontSize: 14), // 가이드 텍스트 색상 회색
               filled: true,
-              fillColor: Colors.grey[200], // Light grey background to indicate non-editable fields
+              fillColor: Colors.grey[200], // 연한 회색 배경
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),

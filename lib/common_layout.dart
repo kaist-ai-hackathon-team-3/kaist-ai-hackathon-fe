@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'home.dart'; // HomePage import
 import 'chat.dart'; // ChatScreen import
-import 'profile.dart'; // ProfileScreen import
+import 'mypage.dart'; // ProfileScreen import
 
 class CommonLayout extends StatefulWidget {
   final Widget body;

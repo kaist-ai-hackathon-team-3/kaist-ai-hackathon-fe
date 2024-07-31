@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'user_provider.dart';
+import 'mypage.dart'; // Profile 모델을 불러옵니다.
+import 'user.dart';
 
-class MyInfoDetails extends StatefulWidget {
-  const MyInfoDetails({super.key});
+class OtherInfoDetails extends StatefulWidget {
+  final Profile profile;
+
+  const OtherInfoDetails({Key? key, required this.profile}) : super(key: key);
 
   @override
-  State<MyInfoDetails> createState() => _MyInfoDetailsState();
+  State<OtherInfoDetails> createState() => _OtherInfoDetailsState();
 }
 
-class _MyInfoDetailsState extends State<MyInfoDetails> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _regionController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
-  final TextEditingController _occupationController = TextEditingController();
-  final TextEditingController _householdSizeController = TextEditingController();
-  final TextEditingController _householdIncomeController = TextEditingController();
-  final TextEditingController _targetFeatureController = TextEditingController();
+class _OtherInfoDetailsState extends State<OtherInfoDetails> {
+  late TextEditingController _nameController;
+  late TextEditingController _regionController;
+  late TextEditingController _genderController;
+  late TextEditingController _occupationController;
+  late TextEditingController _householdSizeController;
+  late TextEditingController _householdIncomeController;
+  late TextEditingController _targetFeatureController;
 
   @override
   void initState() {
@@ -25,34 +27,14 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
   }
 
   void _initializeProfileData() {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final user = userProvider.user;
-
-    if (user != null) {
-      // Find the profile with userId == 1
-      final profile = user.profile.firstWhere(
-        (profile) => profile.name == '이신혁',
-        /*orElse: () => Profile(
-          id: 0,
-          name: '',
-          userId: 1,
-          region: '',
-          gender: '',
-          occupation: '',
-          householdSize: 0,
-          householdIncome: 0,
-          targetFeature: '',
-        ),*/
-      );
-
-      _nameController.text = profile.name;
-      _regionController.text = profile.region;
-      _genderController.text = profile.gender;
-      _occupationController.text = profile.occupation;
-      _householdSizeController.text = profile.householdSize.toString();
-      _householdIncomeController.text = profile.householdIncome.toString();
-      _targetFeatureController.text = profile.targetFeature;
-    }
+    final profile = widget.profile;
+    _nameController = TextEditingController(text: profile.name);
+    _regionController = TextEditingController(text: profile.region);
+    _genderController = TextEditingController(text: profile.gender);
+    _occupationController = TextEditingController(text: profile.occupation);
+    _householdSizeController = TextEditingController(text: profile.householdSize.toString());
+    _householdIncomeController = TextEditingController(text: profile.householdIncome.toString());
+    _targetFeatureController = TextEditingController(text: profile.targetFeature);
   }
 
   @override
@@ -74,7 +56,7 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          '내 프로필 수정',
+          '프로필 수정',
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -166,10 +148,10 @@ class _MyInfoDetailsState extends State<MyInfoDetails> {
           SizedBox(height: 8),
           TextFormField(
             controller: controller,
-            readOnly: true, // Makes the text field read-only
+            readOnly: true, 
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.grey[200], // Light grey background to indicate non-editable fields
+              fillColor: Colors.grey[200],
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
