@@ -1,5 +1,7 @@
-import 'package:jungmal/home_category.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'user_provider.dart';
+import 'home_category.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -70,17 +72,28 @@ class LoginScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 20),
                 // Log In Button
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeCategoryScreen(),
-                      ),
-                    );
+                  onTap: () async {
+                    // 유저 정보 가져오기
+                    await Provider.of<UserProvider>(context, listen: false).fetchUserInfo();
+
+                    // 유저 정보를 성공적으로 가져왔으면 HomeCategoryScreen으로 이동
+                    if (Provider.of<UserProvider>(context, listen: false).user != null) {
+                      print('User information successfully fetched: ${Provider.of<UserProvider>(context, listen: false).user}');
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeCategoryScreen(),
+                        ),
+                      );
+                    } else {
+                      // 유저 정보 가져오기에 실패했으면 오류 메시지 표시
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to load user info')),
+                      );
+                    }
                   },
                   child: Container(
                     width: 327,

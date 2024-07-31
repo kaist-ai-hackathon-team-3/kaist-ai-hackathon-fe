@@ -1,9 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:provider/provider.dart';
+import 'user_provider.dart';
+
 import 'package:jungmal/message.dart';
+
 import 'package:chat_bubbles/bubbles/bubble_normal.dart';
-import 'home.dart'; 
+import 'home.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -17,7 +22,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController scrollController = ScrollController();
   final List<Message> msgs = [];
   bool isTyping = false;
-  String userName = "사용자"; 
+  String userName = "사용자";
 
   @override
   void initState() {
@@ -32,27 +37,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  Future<void> _fetchUserName() async {
-    try {
-      final response = await http.get(
-        Uri.parse("http://223.130.141.98:3000/user"),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      );
-
-      if (response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          userName = data["profile"][0]["name"];
-        });
-      } else {
-        throw Exception('Failed to load user profile');
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to fetch user name: ${e.toString()}")),
-      );
+  void _fetchUserName() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (userProvider.user != null) {
+      setState(() {
+        userName = userProvider.user!.username; // 유저의 username을 userName 변수에 저장
+      });
     }
   }
 

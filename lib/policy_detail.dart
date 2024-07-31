@@ -102,7 +102,7 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        policy['serviceName'] ?? 'N/A',
+                                        policy['serviceName'] ?? '없음',
                                         style: const TextStyle(
                                           color: Colors.black,
                                           fontSize: 18,
@@ -117,10 +117,10 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen> {
                                       Row(
                                         children: [
                                           _buildTag(
-                                              policy['supportType'] ?? 'N/A'),
+                                              policy['supportType'] ?? '정부 지원'),
                                           const SizedBox(width: 10),
-                                          _buildTag(policy['category'] ??
-                                              'N/A'), // 여기에서 원하는 필드를 사용
+                                          _buildTag(policy['laws'] ??
+                                              '기간 한정'), // 여기에서 원하는 필드를 사용
                                         ],
                                       ),
                                     ],
@@ -158,27 +158,27 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen> {
                     const SizedBox(height: 40),
                     _buildSectionTitle('지원 대상'),
                     const SizedBox(height: 10),
-                    Text(policy['supportTarget'] ?? 'N/A',
+                    Text(policy['supportTarget'] ?? '없음',
                         style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 20),
                     _buildSectionTitle('지원 기간'),
                     const SizedBox(height: 10),
-                    Text(policy['applicationDeadline'] ?? 'N/A',
+                    Text(policy['applicationDeadline'] ?? '없음',
                         style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 20),
                     _buildSectionTitle('지원 내용'),
                     const SizedBox(height: 10),
-                    Text(policy['supportDetails'] ?? 'N/A',
+                    Text(policy['supportDetails'] ?? '없음',
                         style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 20),
                     _buildSectionTitle('관련 정보'),
                     const SizedBox(height: 10),
-                    Text(policy['selectionCriteria'] ?? 'N/A',
+                    Text(policy['selectionCriteria'] ?? '없음',
                         style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 20),
                     _buildSectionTitle('신청 방법'),
                     const SizedBox(height: 10),
-                    Text(policy['applicationMethod'] ?? 'N/A',
+                    Text(policy['applicationMethod'] ?? '없음',
                         style: const TextStyle(fontSize: 16)),
                   ],
                 ),
