@@ -96,7 +96,8 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
                 child: SingleChildScrollView(
                   child: Center(
                     child: Wrap(
-                      spacing: 40.0,
+                      spacing:
+                          20.0, // Adjust spacing to fit three items per row
                       runSpacing: 20.0,
                       children: [
                         policyCategory(
@@ -141,17 +142,17 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
                         ),
                         policyCategory(
                           context,
-                          'images/home_category_기타.png',
+                          'images/home_category_북한.png',
                           '북한, 다문화',
                         ),
                         policyCategory(
                           context,
-                          'images/home_category_기타.png',
+                          'images/home_category_국방.png',
                           '국방',
                         ),
                         policyCategory(
                           context,
-                          'images/home_category_기타.png',
+                          'images/home_category_교육.png',
                           '교육',
                         ),
                         policyCategory(
@@ -202,7 +203,7 @@ class _HomeCategoryScreenState extends State<HomeCategoryScreen> {
     return GestureDetector(
       onTap: () => _toggleCategory(text),
       child: Container(
-        width: 115,
+        width: 100, // Adjust width to fit three items per row
         height: 120, // 텍스트를 포함한 높이 조정
         decoration: BoxDecoration(
           color: const Color(0xFFF6F5FF),

@@ -36,6 +36,9 @@ class _HomePageState extends State<HomePage> {
         ).timeout(const Duration(seconds: 10)); // 10초 타임아웃 설정
         if (response.statusCode == 200) {
           final List<dynamic> data = json.decode(response.body);
+          for (var policy in data) {
+            policy['categoryID'] = category; // 카테고리 ID 추가
+          }
           policies.addAll(data);
           print('Data for category $category: $data');
         } else {
@@ -84,7 +87,7 @@ class HomePageContent extends StatelessWidget {
               },
               child: Center(
                 child: Container(
-                  width: 345,
+                  width: 355,
                   height: 45,
                   decoration: ShapeDecoration(
                     color: const Color(0xFFF0F2F6),
@@ -98,7 +101,7 @@ class HomePageContent extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color(0xFF686A8A),
-                        fontSize: 14,
+                        fontSize: 16,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w400,
                         height: 1.5,
@@ -114,38 +117,67 @@ class HomePageContent extends StatelessWidget {
               '새로 나온 정책',
               style: TextStyle(
                 color: Color(0xFF303030),
-                fontSize: 20,
+                fontSize: 24,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w700,
                 height: 1.5,
                 letterSpacing: 0.56,
               ),
             ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 218.43,
-              child: FutureBuilder<List<dynamic>>(
-                future: policies,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    print('Error: ${snapshot.error}');
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    print('No policies found');
-                    return const Center(child: Text('No policies found'));
-                  } else {
-                    final displayData = snapshot.data!.take(10).toList();
-                    return ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: displayData
-                          .map((policy) => policyCard(context, policy))
-                          .toList(),
-                    );
-                  }
-                },
-              ),
+            const SizedBox(height: 20),
+            FutureBuilder<List<dynamic>>(
+              future: policies,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  print('Error: ${snapshot.error}');
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  print('No policies found');
+                  return const Center(child: Text('No policies found'));
+                } else {
+                  final displayData = snapshot.data!.take(10).toList();
+                  final remainingData =
+                      snapshot.data!.skip(10).take(10).toList();
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 260,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: displayData
+                              .map((policy) => policyCard(context, policy))
+                              .toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        '내 주변 정책',
+                        style: TextStyle(
+                          color: Color(0xFF303030),
+                          fontSize: 24,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w700,
+                          height: 1.5,
+                          letterSpacing: 0.56,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 260,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: remainingData
+                              .map((policy) => policyCard(context, policy))
+                              .toList(),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -154,12 +186,17 @@ class HomePageContent extends StatelessWidget {
   }
 
   Widget policyCard(BuildContext context, dynamic policy) {
+    final String imagePath = _getImageAsset(policy['categoryID']);
+    print(
+        'Loading image for policy ${policy['serviceName']}: $imagePath'); // 이미지 경로 로그
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PolicyDetailScreen(policyId: policy['serviceID']),
+            builder: (context) =>
+                PolicyDetailScreen(policyId: policy['serviceID']),
           ),
         );
       },
@@ -169,18 +206,15 @@ class HomePageContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 147,
-              height: 108,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(11),
-              ),
-              child: Image.network(
-                'https://via.placeholder.com/147x108', // 임시 이미지 URL
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset('images/home_category_농축어업.png');
-                },
+            ClipRRect(
+              borderRadius: BorderRadius.circular(11),
+              child: SizedBox(
+                width: 127, // 원하는 크기로 설정
+                height: 120, // 원하는 크기로 설정
+                child: Image.asset(
+                  imagePath, // 로컬 이미지 에셋 로드
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             const SizedBox(height: 5),
@@ -191,7 +225,7 @@ class HomePageContent extends StatelessWidget {
                   color: Color(0xFF303030),
                   fontSize: 14,
                   fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                   height: 1.5,
                   letterSpacing: 0.39,
                 ),
@@ -213,7 +247,7 @@ class HomePageContent extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 5),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
               decoration: BoxDecoration(
@@ -238,5 +272,36 @@ class HomePageContent extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getImageAsset(int categoryId) {
+    switch (categoryId) {
+      case 1:
+        return 'images/home_category_생활.png';
+      case 2:
+        return 'images/home_category_주거.png';
+      case 3:
+        return 'images/home_category_고용.png';
+      case 4:
+        return 'images/home_category_보건.png';
+      case 5:
+        return 'images/home_category_행정.png';
+      case 6:
+        return 'images/home_category_보호.png';
+      case 7:
+        return 'images/home_category_문화.png';
+      case 8:
+        return 'images/home_category_농축어업.png';
+      case 9:
+        return 'images/home_category_북한.png';
+      case 10:
+        return 'images/home_category_국방.png';
+      case 11:
+        return 'images/home_category_교육.png';
+      case 12:
+        return 'images/home_category_기타.png';
+      default:
+        return 'images/home_category_기타.png';
+    }
   }
 }
