@@ -28,13 +28,15 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isTyping = false;
   String userName = "사용자";
   int chatRoomId = 0;
-  int userId = 0;
+  int userId = 1;
+  int profileId = 11;
 
   @override
   void initState() {
     super.initState();
     _fetchUserProfile();
     _fetchChatRooms();
+    _createNewChatRoom();
   }
 
   @override
@@ -51,11 +53,15 @@ class _ChatScreenState extends State<ChatScreen> {
         headers: {"Content-Type": "application/json"},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final profileData = json.decode(response.body);
         setState(() {
           userName = profileData['name'];
+          userId = profileData['userId']; 
+          profileId = profileData['id'];
         });
+        print('Profile loaded: $userName, User ID: $userId, Profile ID: $profileId');
+        await _fetchChatRooms(); // Fetch chat rooms after setting profile data
       } else {
         throw Exception('Failed to load profile info');
       }
@@ -70,7 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
       var userId = userProvider.user!.id; // userId 가져오기
       try {
         final response = await http.get(
-          Uri.parse("http://223.130.141.98:3000/clova/rooms/$userId"),
+          Uri.parse("http://223.130.141.98:3000/clova/rooms/${userProvider.user!.id}"),
           headers: {"Content-Type": "application/json"},
         );
 
@@ -93,16 +99,20 @@ class _ChatScreenState extends State<ChatScreen> {
         userName = userProvider.user!.username;
         userId = userProvider.user!.id;
       });
-      print('사용자 데이터 로드 완료: $userName, User ID: $userId');
-      _createNewChatRoom();
+      print('User data loaded: $userName, User ID: $userId, Profile ID: $profileId');
+      await _createNewChatRoom(); // Ensure that userId and profileId are set before calling this
     }
   }
 
   Future<void> _createNewChatRoom() async {
     try {
-      print('새 채팅방 생성 중: /clova/newChatRoom/$userId');
+        /*if (userId == 0 || profileId == 0) {
+        print('User ID or Profile ID is not set.');
+        return;
+      }*/
+      print('새 채팅방 생성 중: /clova/newChatRoom/$userId/$profileId');
       var response = await http.get(
-        Uri.parse("http://223.130.141.98:3000/clova/newChatRoom/$userId"),
+        Uri.parse("http://223.130.141.98:3000/clova/newChatRoom/$userId/$profileId"),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -191,14 +201,14 @@ class _ChatScreenState extends State<ChatScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "messages": text,
-          "chatRoomId": chatRoomId, // 추가된 필드
+          "roomId": chatRoomId, // 추가된 필드
         }),
       );
 
       print('API 응답 상태 코드: ${response.statusCode}');
       print('API 응답 본문: ${response.body}');
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         setState(() {
           isTyping = false;
