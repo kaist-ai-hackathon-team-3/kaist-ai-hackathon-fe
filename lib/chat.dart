@@ -1,12 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:provider/provider.dart';
 import 'user_provider.dart';
-
 import 'package:jungmal/message.dart';
-
 import 'package:chat_bubbles/bubbles/bubble_normal.dart';
 import 'home.dart';
 
@@ -23,11 +20,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Message> msgs = [];
   bool isTyping = false;
   String userName = "사용자";
+  int chatRoomId = 0;
+  int userId = 0;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserName();
+    _fetchUserData();
   }
 
   @override
@@ -37,19 +36,89 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void _fetchUserName() {
+  void _fetchUserData() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.user != null) {
       setState(() {
-        userName = userProvider.user!.username; // 유저의 username을 userName 변수에 저장
+        userName = userProvider.user!.username;
+        userId = userProvider.user!.id;
       });
+      print('사용자 데이터 로드 완료: $userName, User ID: $userId');
+      _createNewChatRoom();
+    }
+  }
+
+  Future<void> _createNewChatRoom() async {
+    try {
+      print('새 채팅방 생성 중: /clova/newChatRoom/$userId');
+      var response = await http.get(
+        Uri.parse("http://223.130.141.98:3000/clova/newChatRoom/$userId"),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      print('새 채팅방 생성 응답 상태 코드: ${response.statusCode}');
+      print('새 채팅방 생성 응답 본문: ${response.body}');
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        setState(() {
+          chatRoomId = json["newChatRoomId"];
+        });
+        print('새 채팅방 ID: $chatRoomId');
+      } else {
+        throw Exception('Failed to create new chat room');
+      }
+    } catch (e) {
+      print('오류 발생: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to create new chat room, please try again!")),
+      );
+    }
+  }
+
+  Future<void> _fetchChatRoomSummary() async {
+    try {
+      print('요청 전송 중: /clova/chatroom/$chatRoomId/summary');
+      var response = await http.get(
+        Uri.parse("http://223.130.141.98:3000/clova/chatroom/$chatRoomId/summary"),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      print('API 응답 상태 코드: ${response.statusCode}');
+      print('API 응답 본문: ${response.body}');
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        setState(() {
+          msgs.add(Message(
+            false,
+            json["content"].toString().trimLeft(),
+          ));
+        });
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+        );
+        print('채팅방 요약 생성 완료: ${json["content"]}');
+      } else {
+        throw Exception('Failed to get response from API');
+      }
+    } catch (e) {
+      setState(() {
+        isTyping = false;
+      });
+      print('오류 발생: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Some error occurred, please try again!")),
+      );
     }
   }
 
   void sendMsg() async {
     String text = textEditingController.text;
 
-    if (text.isEmpty) return;
+    if (text.isEmpty || chatRoomId == 0) return; // chatRoomId가 0이면 반환
     textEditingController.clear();
 
     setState(() {
@@ -64,13 +133,18 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     try {
+      print('메시지 전송 중: $text');
       var response = await http.post(
         Uri.parse("http://223.130.141.98:3000/clova/chat"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "messages": text,
+          "chatRoomId": chatRoomId, // 추가된 필드
         }),
       );
+
+      print('API 응답 상태 코드: ${response.statusCode}');
+      print('API 응답 본문: ${response.body}');
 
       if (response.statusCode == 201) {
         var json = jsonDecode(response.body);
@@ -86,6 +160,10 @@ class _ChatScreenState extends State<ChatScreen> {
           duration: const Duration(seconds: 1),
           curve: Curves.easeOut,
         );
+        print('응답 수신 완료: ${json["content"]}');
+        if (msgs.length == 2) {  // 사용자가 첫 대화를 보내고 나서 첫 번째 응답을 받은 후에만 요약 요청
+          await _fetchChatRoomSummary();
+        }
       } else {
         throw Exception('Failed to get response from API');
       }
@@ -93,6 +171,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         isTyping = false;
       });
+      print('오류 발생: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Some error occurred, please try again!")),
       );
