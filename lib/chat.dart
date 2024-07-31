@@ -10,6 +10,11 @@ import 'package:jungmal/message.dart';
 import 'package:chat_bubbles/bubbles/bubble_normal.dart';
 import 'home.dart';
 
+import 'dart:io'; // File 처리
+import 'package:path_provider/path_provider.dart'; // Path 처리
+import 'package:audioplayers/audioplayers.dart'; // Audio Player
+import 'package:http/http.dart' as http; // HTTP 요청
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -28,7 +33,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchUserName();
     _fetchUserProfile();
     _fetchChatRooms();
   }
@@ -38,15 +42,6 @@ class _ChatScreenState extends State<ChatScreen> {
     textEditingController.dispose();
     scrollController.dispose();
     super.dispose();
-  }
-
-  void _fetchUserName() {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    if (userProvider.user != null) {
-      setState(() {
-        userName = userProvider.user!.username; // 유저의 username을 userName 변수에 저장
-      });
-    }
   }
 
   Future<void> _fetchUserProfile() async {
