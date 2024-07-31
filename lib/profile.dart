@@ -1,264 +1,205 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'user_provider.dart';
 import 'common_layout.dart';
+import 'my_profile_edit.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // UserProvider에서 사용자 정보를 가져옴
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+
     return CommonLayout(
       selectedIndex: 2,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 343,
-                height: 162,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      child: Container(
-                        width: 343,
-                        height: 162,
-                        decoration: ShapeDecoration(
-                          color: const Color(0xFFE9F4E9),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
+      body: user != null ? Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Profile Header
+          Container(
+            width: double.infinity,
+            height: 280,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(0.61, -0.79),
+                end: Alignment(-0.61, 0.79),
+                colors: [
+                  Color(0xCCADEBB3).withOpacity(0.8), // 투명도 80%
+                  Color.fromARGB(255, 224, 240, 189).withOpacity(0.8), // 투명도 80%
+                ],
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  blurRadius: 4,
+                  offset: Offset(0, 4),
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF6F5FF),
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage('images/chat_profile.png'),
+                      fit: BoxFit.cover,
                     ),
-                    const Positioned(
-                      left: 163,
-                      top: 99,
-                      child: Text(
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  '${user.username} 님',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 25,
+                    fontFamily: 'Noto Sans',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 4),
+                // Text for scraped policies can be uncommented and used if needed
+                /*Text(
+                  '스크랩한 정책 ${user.scrapedPolicies.length}개',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),*/
+                SizedBox(height: 4),
+                InkWell(
+                  onTap: () {
+                    // Navigate to MyInfoDetails for editing
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyInfoDetails()),
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
                         '프로필 수정',
-                        textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF949497),
-                          fontSize: 10,
-                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          fontFamily: 'Noto Sans KR',
                           fontWeight: FontWeight.w400,
-                          height: 1.6, // Text height 0.16에서 1.6으로 수정
-                          letterSpacing: 0.28,
                         ),
                       ),
-                    ),
-                    const Positioned(
-                      left: 163,
-                      top: 68,
-                      child: Text(
-                        '간단한 계정정보',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                          height: 1.5, // Text height 0.08에서 1.5으로 수정
-                          letterSpacing: 0.28,
-                        ),
+                      SizedBox(width: 6),
+                      Icon(
+                        Icons.edit,
+                        size: 15,
+                        color: Color(0xFF949497),
                       ),
-                    ),
-                    const Positioned(
-                      left: 163,
-                      top: 31,
-                      child: Text(
-                        '이름',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                          height: 1.2, // Text height 0.04에서 1.2으로 수정
-                          letterSpacing: 0.28,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 25,
-                      top: 31,
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: const ShapeDecoration(
-                          color: Color(0xFFD9D9D9),
-                          shape: OvalBorder(),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-              const SizedBox(
-                width: 300,
-                height: 50,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      child: Text(
-                        '다른 프로필',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                          height: 1.2, // Text height 0.04에서 1.2으로 수정
-                          letterSpacing: 0.28,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      top: 25,
-                      child: Text(
-                        '가족, 친구, 연인에게 맞는 정책을 알아보세요! ',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF949497),
-                          fontSize: 14,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                          height: 1.5, // Text height 0.08에서 1.5으로 수정
-                          letterSpacing: 0.28,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 15),
-              SizedBox(
-                width: 343,
-                height: 250,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildProfileCard(context, '이름', '대충 특징'),
-                    const SizedBox(height: 15),
-                    _buildProfileCard(context, '이름', '대충 특징'),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 312,
-                height: 45,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      child: Container(
-                        width: 312,
-                        height: 45,
-                        decoration: ShapeDecoration(
-                          color: const Color(0xFFA2D462),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Positioned(
-                      child: Center(
-                        child: Text(
-                          '계정 추가',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w700,
-                            height: 0.09,
-                            letterSpacing: 0.45,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+              ],
+            ),
           ),
-        ),
+          // Profile Details Section
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: user.profile.map((profile) => _buildProfileTile(context, profile.name, profile.name /*relation으로 추가 필요*/)).toList(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFA2D462), // Background color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+              ),
+              onPressed: () {
+                // Navigate to account linking page or functionality
+              },
+              child: Text(
+                '연동계정 추가',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'Noto Sans KR',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ) : Center(
+        child: Text('사용자 정보를 불러오는 중입니다...'),
       ),
     );
   }
 
-  Widget _buildProfileCard(BuildContext context, String name, String details) {
-    return SizedBox(
-      width: 343,
-      height: 85,
-      child: Stack(
+  Widget _buildProfileTile(BuildContext context, String name, String relation) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Color(0xFFE9F4E9),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x3FB3B3B3),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Row(
         children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            child: Container(
-              width: 343,
-              height: 85,
-              decoration: ShapeDecoration(
-                color: const Color(0xFFE9F4E9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Color(0xFFF7F7F7),
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 21,
-            top: 13,
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: const ShapeDecoration(
-                color: Color(0xFFD9D9D9),
-                shape: OvalBorder(),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 95,
-            top: 20,
-            child: Text(
-              name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-                height: 1.2,
-                letterSpacing: 0.28,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 97,
-            top: 46,
-            child: SizedBox(
-              width: 130,
-              height: 23,
-              child: Text(
-                details,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                  letterSpacing: 0.28,
+                SizedBox(height: 4),
+                Text(
+                  relation,
+                  style: TextStyle(
+                    color: Color(0xFF626262),
+                    fontSize: 16,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],

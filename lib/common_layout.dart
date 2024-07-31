@@ -1,3 +1,4 @@
+// common_layout.dart
 import 'package:flutter/material.dart';
 import 'home.dart'; // HomePage import
 import 'chat.dart'; // ChatScreen import
