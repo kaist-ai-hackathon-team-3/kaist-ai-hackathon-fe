@@ -21,6 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController textEditingController = TextEditingController();
   final ScrollController scrollController = ScrollController();
   final List<Message> msgs = [];
+  final List<Map<String, dynamic>> rooms = [];
   bool isTyping = false;
   String userName = "사용자";
 
@@ -28,6 +29,8 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _fetchUserName();
+    _fetchUserProfile();
+    _fetchChatRooms();
   }
 
   @override
@@ -43,6 +46,54 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         userName = userProvider.user!.username; // 유저의 username을 userName 변수에 저장
       });
+    }
+  }
+
+  Future<void> _fetchUserProfile() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://223.130.141.98:3000/profile'),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        final profileData = json.decode(response.body);
+        setState(() {
+          userName = profileData['name'];
+        });
+      } else {
+        throw Exception('Failed to load profile info');
+      }
+    } catch (e) {
+      print('Error fetching profile: $e');
+    }
+  }
+
+  Future<void> _fetchChatRooms() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (userProvider.user != null) {
+      final userId = userProvider.user!.id; // userId 가져오기
+      try {
+        final response = await http.get(
+          Uri.parse("http://223.130.141.98:3000/clova/rooms/$userId"),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (response.statusCode == 200) {
+          final List<dynamic> data = json.decode(response.body);
+          setState(() {
+            rooms.clear();
+            rooms.addAll(data
+                .map((room) =>
+                    {"id": room["id"], "roomTitle": room["roomTitle"]})
+                .toList());
+          });
+        } else {
+          throw Exception('Failed to load rooms');
+        }
+      } catch (e) {
+        print('Error fetching rooms: $e');
+      }
     }
   }
 
@@ -115,12 +166,19 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      '$userName',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 24,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '$userName',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 24,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                     ),
                   ),
                   Align(
@@ -135,8 +193,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
             ),
-
-            // Add more items here
+            // 채팅방 목록을 나열합니다.
+            ...rooms
+                .map((room) => ListTile(
+                      title: Text(room["roomTitle"]),
+                      // onTap: () => _navigateToRoom(room["id"]),
+                    ))
+                .toList(),
           ],
         ),
       ),
