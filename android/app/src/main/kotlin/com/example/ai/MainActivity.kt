@@ -1,4 +1,4 @@
-package com.example.ai
+package com.threeapp.jungmal
 
 import io.flutter.embedding.android.FlutterActivity
 

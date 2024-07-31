@@ -1,4 +1,4 @@
-# ai
+# Jungmal
 
 A new Flutter project.
 
