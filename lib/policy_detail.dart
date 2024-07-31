@@ -55,6 +55,11 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen> {
             return const Center(child: Text('No data found'));
           } else {
             final policy = snapshot.data!;
+            // 요약 문구 생성
+            final summary =
+                '${policy['serviceName']}은 ${policy['supportType']} 지원형으로, '
+                '${policy['supportTarget']}을 대상으로 한 지원 정책입니다.';
+
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
@@ -79,8 +84,8 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen> {
                                   height: 60,
                                   decoration: BoxDecoration(
                                     image: const DecorationImage(
-                                      image: NetworkImage(
-                                          "https://via.placeholder.com/44x45"),
+                                      image: AssetImage(
+                                          "images/policy_detail_logo.png"),
                                       fit: BoxFit.fill,
                                     ),
                                     border: Border.all(
@@ -111,9 +116,11 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen> {
                                       const SizedBox(height: 10),
                                       Row(
                                         children: [
-                                          _buildTag(policy['supportType'] ?? 'N/A'),
+                                          _buildTag(
+                                              policy['supportType'] ?? 'N/A'),
                                           const SizedBox(width: 10),
-                                          _buildTag('해시태그'),
+                                          _buildTag(policy['category'] ??
+                                              'N/A'), // 여기에서 원하는 필드를 사용
                                         ],
                                       ),
                                     ],
@@ -128,15 +135,15 @@ class _PolicyDetailScreenState extends State<PolicyDetailScreen> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(16.0),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
                                 child: Center(
                                   child: Text(
-                                    'AI 3줄 요약',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    summary, // 요약 문구 사용
+                                    textAlign: TextAlign.start,
+                                    style: const TextStyle(
                                       color: Colors.black,
-                                      fontSize: 16,
+                                      fontSize: 12,
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w400,
                                     ),

@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
           headers: {
             'Accept': 'application/json',
           },
-        ).timeout(const Duration(seconds: 10)); // 10초 타임아웃 설정
+        ).timeout(const Duration(seconds: 20)); // 10초 타임아웃 설정
         if (response.statusCode == 200) {
           final List<dynamic> data = json.decode(response.body);
           for (var policy in data) {

@@ -77,6 +77,7 @@ flutter:
     - images/home_category_기타.png
     - images/home_category_국방.png
     - images/home_category_교육.png
+    - images/policy_detail_logo.png
     - images/chat_bg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
