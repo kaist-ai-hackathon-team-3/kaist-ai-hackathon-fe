@@ -2,9 +2,20 @@ import 'package:ai/home_category.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter/services.dart';
+import 'login_logic.dart';
 
-class LoginScreen extends StatelessWidget {
+// LoginScreen Stateful 로 변경함
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  int _userId = 0;
+  String _nickname = '';
+  String _email = '';
 
   @override
   Widget build(BuildContext context) {
@@ -76,13 +87,21 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Log In Button
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeCategoryScreen(),
-                      ),
-                    );
+                  // Kakao Login 
+                  onTap: () async {
+                    await loginWithKakao(onProfileFetched: (userId, nickname, email) {
+                      setState(() {
+                        _userId = userId;
+                        _nickname = nickname;
+                        _email = email;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeCategoryScreen(),
+                        ),
+                      );
+                    });
                   },
                   child: Container(
                     width: 327,

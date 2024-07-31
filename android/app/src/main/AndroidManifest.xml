@@ -1,9 +1,18 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="Jungmal"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- 카카오 SDK 초기화를 위한 메타 데이터 추가 -->
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="845483f619ce7edf43af42ce8215559b"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
