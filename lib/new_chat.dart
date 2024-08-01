@@ -1,11 +1,61 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'user_provider.dart';
 import 'chat.dart';
 import 'home.dart';
+import 'user.dart'; // Ensure this imports Profile class
 
-class NewChatScreen extends StatelessWidget {
+class NewChatScreen extends StatefulWidget {
   const NewChatScreen({super.key});
+
+  @override
+  _NewChatScreenState createState() => _NewChatScreenState();
+}
+
+class _NewChatScreenState extends State<NewChatScreen> {
+  bool isLoading = false; // 로딩 중 상태를 나타냄
+
+  void _startNewChat(BuildContext context, Profile profile) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://223.130.141.98:3000/clova/newChatRoom'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "userId": profile.userId,
+          "profileId": profile.id,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final chatRoomId = data['newChatRoomId'];
+
+        // 새로운 채팅 방으로 이동
+        /*Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(chatRoomId chatRoomId),
+          ),
+        );*/
+      } else {
+        throw Exception('새 채팅 방 생성 실패');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('새 채팅 시작 오류: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +64,7 @@ class NewChatScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
+          // 배경 이미지
           Positioned.fill(
             child: Image.asset(
               'images/chat_bg.png',
@@ -24,28 +74,23 @@ class NewChatScreen extends StatelessWidget {
           Positioned(
             left: 16,
             top: 60,
-            right: 16, // Add right padding to balance the layout
+            right: 16,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
                     CircleAvatar(
-                      radius: 22,
-                      backgroundColor: Colors.white.withOpacity(0),
-                      child: ClipOval(
-                        child: Container(
-                          decoration: const ShapeDecoration(
-                            color: Colors.white,
-                            shape: OvalBorder(
-                              side: BorderSide(
-                                  width: 1, color: Color(0xFFE3E4E5)),
+                          radius: 22,
+                          child: ClipOval(
+                            child: Image.asset(
+                              "images/chat_profile.png",
+                              fit: BoxFit.fill,
+                              width: 44,
+                              height: 44,
                             ),
                           ),
-                          child: const Icon(Icons.person, size: 24),
                         ),
-                      ),
-                    ),
                     const SizedBox(width: 16),
                     Text(
                       '${userProvider.user?.username}님의 새 채팅',
@@ -76,11 +121,7 @@ class NewChatScreen extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
                       onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ChatScreen()),
-                        );
+                        Navigator.pop(context);
                       },
                     ),
                   ],
@@ -111,7 +152,7 @@ class NewChatScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
-                  height: 150, // 여유 공간을 주기 위해 높이를 설정합니다.
+                  height: 150,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -120,9 +161,7 @@ class NewChatScreen extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: GestureDetector(
-                                onTap: () {
-                                  // 채팅 시작 로직을 여기에 추가합니다.
-                                },
+                                onTap: () => _startNewChat(context, profile),
                                 child: Container(
                                   width: 117,
                                   height: 170,
@@ -133,8 +172,7 @@ class NewChatScreen extends StatelessWidget {
                                       begin: Alignment(0.00, -1.00),
                                       end: Alignment(0, 1),
                                       colors: [
-                                        Color(
-                                            0xFFBFDDA7), // 첫 번째 색상 (예: 연한 초록색)
+                                        Color(0xFFBFDDA7),
                                         Color(0x00ffffff),
                                       ],
                                     ),
@@ -214,7 +252,10 @@ class NewChatScreen extends StatelessWidget {
               ],
             ),
           ),
-          
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
         ],
       ),
     );
